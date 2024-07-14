@@ -1,0 +1,13 @@
+{
+  "name": "moss-examples",
+  "version": "1.0.0",
+  "author": "kvxy",
+  "type": "module",
+  "scripts": {
+    "dev-test": "vite ./test"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.2",
+    "vite": "^5.1.3"
+  }
+}

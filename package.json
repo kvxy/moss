@@ -1,0 +1,18 @@
+{
+  "name": "moss",
+  "version": "0.1.0",
+  "description": "Simple WebGPU Rendering Library",
+  "author": "kvxy",
+  "scripts": {
+    "engine:tsc": "tsc --project src",
+    "engine:bundle": "webpack --config src/webpack.config.js --mode development"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.40",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}
