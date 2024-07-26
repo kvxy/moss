@@ -6,7 +6,7 @@ export type MaterialDescriptor = {
   alpha?: number,
 };
 
-export class Material implements MaterialDescriptor {
+export class Material {
   public color?: Color;
   public useVertexColor: boolean = false;
   public alpha?: number;
