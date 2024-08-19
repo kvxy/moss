@@ -1,26 +1,26 @@
 import { Geometry } from './geometry/geometry';
 import { Material } from './material/material';
-import { Mesh } from './mesh/mesh';
+import { Mesh } from './objects/mesh';
 import { Scene } from './core/scene';
-import { Color } from './utils/color';
-import { TypedList } from './utils/resizable-typed-arrays';
-import { Vector, Vector2, Vector3 } from './utils/vector';
-import { Renderer } from './core/renderer';
+import { Color } from './utils/math/color';
+import { Vector, Vector2, Vector3 } from './utils/math/vector';
+import { Engine } from './core/engine';
+import { Matrix4x4 } from './utils/math/matrix4x4';
 
 export {
-  // core
-  Renderer,
+  // Core
+  Engine,
   Scene,
 
-  // meshing
+  // Meshing
   Material,
   Geometry,
   Mesh,
 
-  // utils
+  // Math Utils
+  Matrix4x4,
   Vector,
   Vector2,
   Vector3,
   Color,
-  TypedList
 };

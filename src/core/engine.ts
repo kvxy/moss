@@ -1,29 +1,32 @@
-import { BasicRasterizer } from '../pipelines/basic-rasterizer';
+import { Rasterizer } from '../pipelines/mesh-rasterizer/mesh-rasterizer';
 import { ComputePipeline, Pipeline, RenderPipeline } from '../pipelines/pipeline';
 import { RenderTarget } from './render-target';
 import { Scene } from './scene';
+import { ID } from '../utils/id';
 
-// WebGPU renderer for client-side graphics
-export class Renderer {
+// WebGPU engine for client-side graphics
+export class Engine {
+  public id: ID = new ID();
+
   public device?: GPUDevice;
   public canvas: HTMLCanvasElement = document.createElement('canvas');
   public context?: GPUCanvasContext;
   public target?: RenderTarget;
 
-  public pass: (renderer: this) => any = () => {};
-  public onInit: (renderer: this) => any = () => {};
+  public pass: (engine: this) => any = () => {};
+  public onInit: (engine: this) => any = () => {};
   public renderPipelines: Map<string, RenderPipeline> = new Map(); 
   public computePipelines: Map<string, ComputePipeline> = new Map(); 
   public resources: Map<string, any> = new Map(); // shared pipeline resources
 
   constructor(initialize: boolean = true, useBasicRasterizer: boolean = true) {
     if (useBasicRasterizer) {
-      this.onInit = (renderer: this) => {
-        if (!renderer.device) return;
-        this.setPipeline('rasterizer', new BasicRasterizer(renderer.device));
+      this.onInit = (engine: this) => {
+        if (!engine.device) return;
+        this.setPipeline('rasterizer', new Rasterizer(engine.device));
       };
-      this.pass = (renderer: this) => {
-        const rasterizer = this.getRenderPipeline('rasterizer') as BasicRasterizer;
+      this.pass = (_engine: this) => {
+        const rasterizer = this.getRenderPipeline('rasterizer') as Rasterizer;
         if (!rasterizer) return;
         rasterizer.render();
       }
@@ -38,7 +41,10 @@ export class Renderer {
     const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' });
     if (!adapter) throw new Error('Failed to get WebGPU adapter');
 
-    const device = this.device = await adapter.requestDevice({ requiredFeatures: ['bgra8unorm-storage'] });
+    const device = this.device = await adapter.requestDevice({
+      label: `Device ${this.id.toString()}$`,
+      requiredFeatures: ['bgra8unorm-storage']
+    });
 
     // canvas & context
     const canvas = this.canvas;

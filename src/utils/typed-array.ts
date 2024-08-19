@@ -43,12 +43,12 @@ const formatConstructorMap = new Map<TypedArrayFormat, TypedArrayConstructor>(ty
 export const TypedArrayMapping = {
   getFormat: function(constructor: TypedArrayConstructor): TypedArrayFormat {
     const str = constructorFormatMap.get(constructor);
-    if (!str) throw new Error('TypedArray missing conversion.');
+    if (!str) throw new Error(`TypedArray missing conversion for constructor ${constructor.name}`);
     return str;
   },
   getConstructor: function(format: TypedArrayFormat): TypedArrayConstructor {
     const constructor = formatConstructorMap.get(format);
-    if (!constructor) throw new Error('TypedArray missing conversion.');
+    if (!constructor) throw new Error(`TypedArray missing conversion for format ${format}.`);
     return constructor;
   }
 };

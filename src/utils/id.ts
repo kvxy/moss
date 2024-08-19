@@ -9,7 +9,7 @@ export class ID {
   private data: Uint32Array = new Uint32Array(4);
 
   constructor(data?: Uint32Array) {
-    if (data && data?.length !== 4) throw new Error('Given EntityID data is not of length 4.');
+    if (data && data?.length !== 4) throw new Error('Given ID data is not of length 4.');
     this.data = data ?? this.generate();
   }
 

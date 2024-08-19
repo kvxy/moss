@@ -1,4 +1,4 @@
-// General vector class
+/** General vector class. **/
 export class Vector {
   [index: number]: number;
 
@@ -54,6 +54,14 @@ export class Vector {
     for (let i = 0; i < vector.dimension; i++)
       vector[i] += other[i];
     return vector;
+  }
+
+  public set(...numbers: any[]): this {
+    const upper = Math.min(numbers.length, this.dimension);
+    for (let i = 0; i < upper; i++) {
+      this[i] = numbers[i];
+    }
+    return this;
   }
 
   public scale(scalar: number, modify?: boolean): this;
@@ -156,5 +164,9 @@ export class Vector3 extends Vector {
 
   public set z(num: number) {
     this[2] = num;
+  }
+
+  public set(x: number, y: number, z: number): this {
+    return super.set(x, y, z);
   }
 }

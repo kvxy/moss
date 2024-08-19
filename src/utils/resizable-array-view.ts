@@ -1,7 +1,7 @@
 import { TypedArray, TypedArrayFormat, TypedArrayMapping, TypedArrayConstructor } from './typed-array';
 
-/** Dynamically resizing typed arrays with shared array buffer. */
-export class ResizableTypedArrays {
+/** Dynamically resizing array buffer with multiple typed array views. */
+export class ResizableArrayView {
   public factor: number = 2;
 
   public buffer: ArrayBufferLike;

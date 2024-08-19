@@ -1,21 +1,23 @@
-import { ResizableTypedArrays } from '../utils/resizable-typed-arrays';
+import { EventEmitter } from '../utils/event-emitter';
+import { ResizableArrayView } from '../utils/resizable-array-view';
+import { Geometry } from './geometry';
 
 export type GeometryBufferDescriptor = {
   label?: string, 
-  typedArrays?: ResizableTypedArrays, 
+  arrayView?: ResizableArrayView, 
   /** Size of buffer in bytes (defaults to size of list in bytes) */
   size?: number, 
   usage: number, 
   mappedAtCreation?: boolean
 };
 
-/** Holds buffers & typed list for a geometry. */
-export class GeometryBuffer {
+/** Holds GPUBuffer and internal ArrayBuffer (from ResizableArrayView) for easy buffer manipulation. */
+export class GeometryBuffer extends EventEmitter {
   protected device?: GPUDevice;
-  public buffer?: GPUBuffer;
-  public typedArrays: ResizableTypedArrays;
+  public gpuBuffer?: GPUBuffer;
+  public arrayView: ResizableArrayView;
 
-  // WebGPU Buffer descriptions
+  // GPUBuffer descriptors
   protected label?: string;
   protected size: number;
   protected usage: number;
@@ -23,23 +25,36 @@ export class GeometryBuffer {
 
   /** @param descriptor Description of the GeometryBuffer. */
   constructor(descriptor: GeometryBufferDescriptor) {
+    super();
     this.label = descriptor.label;
-    this.size = descriptor.size ?? descriptor.typedArrays?.byteLength ?? 0;
-    this.typedArrays = descriptor.typedArrays ?? new ResizableTypedArrays(this.size);
+    this.size = descriptor.size ?? descriptor.arrayView?.byteLength ?? 0;
+    this.arrayView = descriptor.arrayView ?? new ResizableArrayView(this.size);
     this.usage = descriptor.usage;
     this.mappedAtCreation = descriptor.mappedAtCreation;
   }
 
+  /** 
+   * Sets the device of this buffer. 
+   * @param device The GPUDevice to bind. */
+  public bindDevice(device: GPUDevice) {
+    if (this.device !== undefined && this.device !== device) throw new Error('GPUDevice already binded.');
+    this.device = device;
+  }
+
   /** Creates internal buffer using given device. Destroys already existing buffer if there is one. */
-  public createGPUBuffer(device: GPUDevice): GPUBuffer {
-    if (this.buffer) this.buffer.destroy();
-    this.buffer = device.createBuffer({
+  public createGPUBuffer() {
+    const device = this.device;
+    if (!device) throw new Error('No GPUDevice binded.')
+
+    if (this.gpuBuffer) this.gpuBuffer.destroy();
+    this.gpuBuffer = device.createBuffer({
       label: this.label,
       size: this.size,
       usage: this.usage,
       mappedAtCreation: this.mappedAtCreation
     });
-    return this.buffer;
+
+    this.triggerEvent('onBufferCreate');
   }
 
   /** 
@@ -48,12 +63,14 @@ export class GeometryBuffer {
    * @param size Size given in bytes.
    */
   public updateGPUBuffer(offset: GPUSize64 = 0, size?: GPUSize64) {
-    if (!this.device || !this.buffer) return;
-    if (this.buffer.size < this.typedArrays.byteLength) {
-      this.buffer.destroy();
-      this.createGPUBuffer(this.device);
+    if (!this.device) throw new Error('No GPUDevice binded.');
+    if (!this.gpuBuffer) throw new Error('GPUBuffer not created.');
+    const upper = (size ? (offset + size) : this.arrayView.byteLength);
+    if (this.gpuBuffer.size < upper) {
+      this.size = upper;
+      this.createGPUBuffer();
     }
-    this.device.queue.writeBuffer(this.buffer, offset, this.typedArrays.buffer, offset, size);
+    this.device.queue.writeBuffer(this.gpuBuffer, offset, this.arrayView.buffer, offset, size);
   }
 
   /** 
@@ -64,13 +81,14 @@ export class GeometryBuffer {
    * @param dataOffset Offset in into data to begin writing from. Given in elements if data is a TypedArray and bytes otherwise.
    * @param size Size of content to write from data to buffer. Given in elements if data is a TypedArray and bytes otherwise.
   */
-  public writeBufferDirect(bufferOffset: number, data: BufferSource | SharedArrayBuffer, dataOffset?: number, size?: number) {
-    if (!this.device || !this.buffer) throw new Error('Buffer not created.');
-    this.device.queue.writeBuffer(this.buffer, bufferOffset, data, dataOffset, size);
+  public writeGPUBufferDirect(bufferOffset: number, data: BufferSource | SharedArrayBuffer, dataOffset?: number, size?: number) {
+    if (!this.device) throw new Error('No GPUDevice binded.');
+    if (!this.gpuBuffer) throw new Error('GPUBuffer not created.');
+    this.device.queue.writeBuffer(this.gpuBuffer, bufferOffset, data, dataOffset, size);
   }
 
   /** Destroys internal buffer. */
   public destroy() {
-    this.buffer?.destroy();
+    this.gpuBuffer?.destroy();
   }
 }

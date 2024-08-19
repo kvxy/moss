@@ -1,4 +1,4 @@
-import { Color } from '../utils/color';
+import { Color } from '../utils/math/color';
 
 export type MaterialDescriptor = {
   color?: Color,

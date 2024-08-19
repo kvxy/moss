@@ -1,5 +1,5 @@
-import { Matrix4x4 } from '../utils/matrix4';
-import { Vector3 } from '../utils/vector';
+import { Matrix4x4 } from '../utils/math/matrix4x4';
+import { Vector3 } from '../utils/math/vector';
 import { Camera } from './camera';
 
 export class PerspectiveCamera extends Camera {

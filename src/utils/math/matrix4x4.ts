@@ -124,5 +124,4 @@ export class Matrix4x4 {
     d[6] = -s * a2 + c * d6;
     d[7] = -s * a3 + c * d7;
   }
-
 }
