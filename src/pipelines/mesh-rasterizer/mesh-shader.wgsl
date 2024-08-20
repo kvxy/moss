@@ -1,11 +1,6 @@
-struct VertexInput {
-  @location(0) position: vec3f,
-  @location(1) color: vec4f
-}
-
 struct VertexOutput {
   @builtin(position) position: vec4f,
-  @location(1) color: vec4f
+  @location(0) color: vec4f
 }
 
 struct Mesh {
@@ -25,11 +20,12 @@ var<uniform> mesh: Mesh;
 
 @vertex
 fn vertex(
-  input: VertexInput
+  @location(0) position: vec3f,
+  @location(1) color: vec4u
 ) -> VertexOutput {
   var output: VertexOutput;
-  output.position = camera.projection * camera.world * mesh.model * vec4f(input.position.xyz, 1.0);
-  output.color = input.color;
+  output.position = vec4f(position.xyz, 1.0); // camera.projection * camera.world * mesh.model * 
+  output.color = vec4f(color) / 255.0;
   return output;
 }
 
@@ -37,5 +33,6 @@ fn vertex(
 fn fragment(
   input: VertexOutput
 ) -> @location(0) vec4f {
-  return input.color;
+  // return vec4f(input.color) / 255.0;
+  return vec4f(1, 0, 0, 1);
 }

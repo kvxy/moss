@@ -1,4 +1,3 @@
-import { EventEmitter } from '../utils/event-emitter';
 import { ResizableArrayView } from '../utils/resizable-array-view';
 
 export type GeometryBufferDescriptor = {
@@ -11,7 +10,7 @@ export type GeometryBufferDescriptor = {
 };
 
 /** Holds GPUBuffer and internal ArrayBuffer (from ResizableArrayView) for easy buffer manipulation. */
-export class GeometryBuffer extends EventEmitter {
+export class GeometryBuffer {
   protected device?: GPUDevice;
   public gpuBuffer?: GPUBuffer;
   public arrayView: ResizableArrayView;
@@ -24,9 +23,8 @@ export class GeometryBuffer extends EventEmitter {
 
   /** @param descriptor Description of the GeometryBuffer. */
   constructor(descriptor: GeometryBufferDescriptor) {
-    super();
     this.label = descriptor.label;
-    this.size = descriptor.size ?? descriptor.arrayView?.byteLength ?? 0;
+    this.size = descriptor.size ?? descriptor.arrayView?.capacity ?? 0;
     this.arrayView = descriptor.arrayView ?? new ResizableArrayView(this.size);
     this.usage = descriptor.usage;
     this.mappedAtCreation = descriptor.mappedAtCreation;
@@ -52,7 +50,7 @@ export class GeometryBuffer extends EventEmitter {
       mappedAtCreation: this.mappedAtCreation
     });
 
-    this.triggerEvent('onBufferCreate');
+    // this.triggerEvent('onBufferCreate');
   }
 
   /** 
@@ -63,8 +61,8 @@ export class GeometryBuffer extends EventEmitter {
   public updateGPUBuffer(offset: GPUSize64 = 0, size?: GPUSize64) {
     if (!this.device) throw new Error('No GPUDevice binded.');
     if (!this.gpuBuffer) throw new Error('GPUBuffer not created.');
-    const upper = (size ? (offset + size) : this.arrayView.byteLength);
-  
+    const upper = (size ? (offset + size) : this.arrayView.capacity);
+
     if (this.gpuBuffer.size < upper) {
       this.size = upper;
       this.createGPUBuffer();

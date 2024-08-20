@@ -11,7 +11,17 @@ export type MeshDescriptor = {
 
 /** Renderable mesh. Holds geometry, material, and per-mesh data. */
 export class Mesh extends Object3D {
+  public static bindGroupLayoutDescriptor: GPUBindGroupLayoutDescriptor = {
+    label: 'Mesh Bind Group Layout',
+    entries: [{
+      binding: 0, // mesh model matrix
+      visibility: GPUShaderStage.VERTEX,
+      buffer: {}
+    }]
+  };
+
   protected device?: GPUDevice;
+  public bindGroup?: GPUBindGroup;
   
   public gpuInitialized: boolean = false;
   public gpuBuffers: Map<string, GPUBuffer> = new Map();
@@ -42,15 +52,16 @@ export class Mesh extends Object3D {
     if (!this.geometry.gpuInitialized) {
       this.geometry.bindDevice(device);
       this.geometry.initializeGPUBuffers();
-      this.geometry.createBindGroup();
     }
+
     this.createGPUBuffers();
+    this.createBindGroup();
 
     this.gpuInitialized = true;
   }
 
-  /** Creeates matrix buffer for this mesh. */
-  public createGPUBuffers() {
+  /** Creates matrix buffer for this mesh, called automatically on render. */
+  private createGPUBuffers() {
     const device = this.device;
     if (!device) throw new Error('No GPUDevice binded');
     if (this.gpuBuffers.get('matrixBuffer') !== undefined) return;
@@ -66,6 +77,27 @@ export class Mesh extends Object3D {
     this.matrix.addEventListener('onUpdate', () => {
       device.queue.writeBuffer(buffer, 0, this.matrix.data);
     });
+  }
+
+  /**
+   * Creates a new bind group for this mesh.
+   * @returns The created bind group;
+   */
+  private createBindGroup(): GPUBindGroup {
+    const device = this.device;
+    if (!device) throw new Error(`No GPUDevice binded.`);
+    const matrixBuffer = this.gpuBuffers.get('matrixBuffer');
+    if (!matrixBuffer) throw new Error('Missing matrix GPUBuffer.');
+    
+    this.bindGroup = device.createBindGroup({
+      label: 'Rasterizer Bind Group',
+      layout: device.createBindGroupLayout(Mesh.bindGroupLayoutDescriptor),
+      entries: [{
+        binding: 0,
+        resource: { buffer: matrixBuffer }
+      }]
+    });
+    return this.bindGroup;
   }
 
   /** Destroys mesh buffers. */

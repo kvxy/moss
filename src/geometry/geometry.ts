@@ -1,16 +1,14 @@
 import { ID } from '../utils/id';
-import { ResizableArrayView } from '../utils/resizable-array-view';
 import { GeometryBuffer } from './geometry-buffer';
 import { GeometryVertexBuffer } from './geometry-vertex-buffer';
 
 export type GeometryDescriptor = {
   label?: string,
-  vertices?: ResizableArrayView,
-  indices?: ResizableArrayView,
-  /** Creates 'default' vertex buffer if true with given vertices data. */
-  createDefault?: boolean,
   /** Creates index buffer if true with given indices data. */
   useIndices?: boolean,
+  /** Creates 'default' vertex buffer if true with given vertices data. */
+  createDefault?: boolean,
+  /** Used to create default vertex buffer. */
   attributeFormats?: {
     position?: GPUVertexFormat,
     color?: GPUVertexFormat
@@ -19,25 +17,23 @@ export type GeometryDescriptor = {
 
 /** Holds and manipulates vertex data. */
 export class Geometry {
-  public readonly id: ID;
   public label: string;
 
-  protected geometryBuffers: Map<string, GeometryBuffer> = new Map();
+  // protected geometryBuffers: Map<string, GeometryBuffer> = new Map();
   protected vertexBuffers: Map<string, GeometryVertexBuffer> = new Map();
+  protected vertexBufferLayouts?: GPUVertexBufferLayout[];
   public indexBuffer?: GeometryBuffer;
 
   public gpuInitialized: boolean = false;
   protected device?: GPUDevice;
-  public bindGroup?: GPUBindGroup;
+  // public bindGroup?: GPUBindGroup;
 
   constructor(descriptor: GeometryDescriptor = {}) {
-    this.id = new ID();
-    this.label = descriptor.label ?? this.id.toString();
+    this.label = descriptor.label ?? '';
 
     if (descriptor.createDefault !== false) {
       const vertexBuffer = new GeometryVertexBuffer({ 
         label: `${this.label} Default Vertex Buffer`,
-        arrayView: descriptor.vertices,
         auto: true,
         stepMode: 'vertex'
       });
@@ -48,8 +44,7 @@ export class Geometry {
     if (descriptor.useIndices === true) {
       this.indexBuffer = new GeometryBuffer({
         label: `${this.label} Index Buffer`,
-        arrayView: descriptor.indices,
-        size: descriptor.indices?.byteLength ?? 0,
+        size: 0,
         usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
       });
     }
@@ -93,7 +88,7 @@ export class Geometry {
    * Adds geometry buffer with given key to geometry.
    * @param key Key of geometry buffer.
    * @param geometryBuffer The geometry buffer to use.
-   */
+   *//*
   public setGeometryBuffer(key: string, geometryBuffer: GeometryBuffer) {
     if (this.getGeometryBuffer(key) !== undefined) throw new Error(`Geometry buffer with key ${key} already exists.`);
     geometryBuffer.addEventListener('onBufferCreate', () => {
@@ -101,25 +96,25 @@ export class Geometry {
     });
     // this.geometryBuffers.get(key)?.destroy();
     this.geometryBuffers.set(key, geometryBuffer);
-  }
+  }*/
 
   /**
    * @param key Key of geometry buffer.
    * @returns the geometry buffer with the given key, undefined if it doesn't exist.
-   */
+   *//*
   public getGeometryBuffer(key: string): GeometryBuffer | undefined {
     return this.geometryBuffers.get(key);
-  }
+  }*/
 
   /**
    * @param key Key of geometry buffer.
    * @returns the geometry buffer with the given key, throws an error if it doesn't exist. 
-   */
+   *//*
   public requireGeometryBuffer(key: string): GeometryBuffer {
     const geometryBuffer = this.getGeometryBuffer(key);
     if (!geometryBuffer) throw new Error(`Given vertex buffer with key ${key} does not exist in geometry.`);
     return geometryBuffer;
-  }
+  }*/
 
   /** 
    * Sets the device of geometry, done automatically on render.
@@ -134,7 +129,7 @@ export class Geometry {
     const device = this.device;
     if (!device) throw new Error(`Geometry ${this.label} has no GPUDevice binded.`);
 
-    [...this.geometryBuffers.values(), ...this.vertexBuffers.values(), this.indexBuffer].forEach(geometryBuffer => {
+    [/*...this.geometryBuffers.values(),*/ ...this.vertexBuffers.values(), this.indexBuffer].forEach(geometryBuffer => {
       if (!geometryBuffer) return;
       if (!geometryBuffer.gpuBuffer) {
         geometryBuffer.bindDevice(device);
@@ -144,7 +139,7 @@ export class Geometry {
     });
   }
 
-  /** Creates the bind group for this geometry, done automatically on render. */
+  /** Creates the bind group for this geometry, done automatically on render. *//*
   public createBindGroup() {
     const device = this.device;
     if (!device) throw new Error(`Geometry ${this.label} has no GPUDevice binded.`);
@@ -179,10 +174,12 @@ export class Geometry {
     });
 
     this.gpuInitialized = true;
-  }
+  }*/
 
   /** @returns Vertex buffer layouts. */
   public getVertexBufferLayouts(): GPUVertexBufferLayout[] {
-    return [...this.vertexBuffers.values()].map(vertexBuffer => vertexBuffer.getLayout());
+    if (!this.vertexBufferLayouts)
+      this.vertexBufferLayouts = [...this.vertexBuffers.values()].map(vertexBuffer => vertexBuffer.getLayout());
+    return this.vertexBufferLayouts;
   }
 }

@@ -11,9 +11,17 @@ buffer.setAttributeData('position', [
 	 1, -1,  1,
 	 1,  1,  1,
 
-	 1,  1,  1,
+   1,  1,  1,
 	-1,  1,  1,
-	-1, -1,  1
+  -1, -1,  1,
+]);
+buffer.setAttributeData('color', [
+  255, 0, 0, 255,
+  0, 255, 0, 255,
+  0, 0, 255, 255,
+  255, 0, 0, 255,
+  0, 255, 0, 255,
+  0, 0, 255, 255
 ]);
 const material = new MOSS.Material({
   color: new MOSS.Color(255, 255, 0)

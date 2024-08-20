@@ -1,4 +1,4 @@
-import { Rasterizer } from '../pipelines/mesh-rasterizer/mesh-rasterizer';
+import { MeshRasterizer } from '../pipelines/mesh-rasterizer/mesh-rasterizer';
 import { ComputePipeline, Pipeline, RenderPipeline } from '../pipelines/pipeline';
 import { RenderTarget } from './render-target';
 import { Scene } from './scene';
@@ -23,10 +23,10 @@ export class Engine {
     if (useBasicRasterizer) {
       this.onInit = (engine: this) => {
         if (!engine.device) return;
-        this.setPipeline('rasterizer', new Rasterizer(engine.device));
+        this.setPipeline('rasterizer', new MeshRasterizer(engine.device));
       };
       this.pass = (_engine: this) => {
-        const rasterizer = this.getRenderPipeline('rasterizer') as Rasterizer;
+        const rasterizer = this.getRenderPipeline('rasterizer') as MeshRasterizer;
         if (!rasterizer) return;
         rasterizer.render();
       }
@@ -66,8 +66,7 @@ export class Engine {
     this.target = new RenderTarget({
       device: device,
       context: context,
-      colorFormat: textureFormat,
-      depthFormat: 'depth24plus',
+      format: textureFormat,
       height: canvas.height,
       width: canvas.width
     });

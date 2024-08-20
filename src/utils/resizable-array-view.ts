@@ -28,11 +28,6 @@ export class ResizableArrayView {
     return this.buffer.byteLength;
   }
 
-  /** Size in bytes of total length used. */
-  public get byteLength(): number {
-    return this._byteLength;
-  }
-
   /** 
    * Resize buffer to given size.
    * @param byteLength The size to resize to.
@@ -81,9 +76,9 @@ export class ResizableArrayView {
     this._byteLength = Math.max(this._byteLength, data.byteLength + offset);
   }
 
-  public put(num: number, index: number, format: TypedArrayFormat) {
+  /*public put(num: number, index: number, format: TypedArrayFormat) {
     const typedArray = this.getTypedArray(format);
     typedArray[index] = num;
     this._byteLength = Math.max(this._byteLength, (index + 1) * TypedArrayMapping.getConstructor(format).BYTES_PER_ELEMENT);
-  }
+  }*/
 }

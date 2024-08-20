@@ -1,5 +1,5 @@
 import { ResizableArrayView } from '../utils/resizable-array-view';
-import { TypedArrayFormat } from '../utils/typed-array';
+import { TypedArrayFormat, TypedArrayMapping } from '../utils/typed-array';
 import { GeometryBuffer } from './geometry-buffer';
 
 type GeometryVertexAttribute = {
@@ -59,7 +59,6 @@ export class GeometryVertexBuffer extends GeometryBuffer {
     super({
       label: descriptor.label ?? 'Vertex Buffer',
       arrayView: descriptor.arrayView,
-      size: descriptor.arrayView?.byteLength, 
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
       mappedAtCreation: descriptor.mappedAtCreation
     });
@@ -135,10 +134,10 @@ export class GeometryVertexBuffer extends GeometryBuffer {
         verticesCount = upper / attribute.components; // number of vertices written to 
 
     this.arrayView.increase((vertexOffset + verticesCount) * this.arrayStride);
-    const format = this.getTypedArrayFormat(attribute.format);
+    const typedArray = this.arrayView.getTypedArray(this.getTypedArrayFormat(attribute.format));
 
     while(counter < upper) {
-      this.arrayView.put(data[readIndex], writeIndex, format);
+      typedArray[writeIndex] = data[readIndex];
       counter++;
       readIndex++;
       writeIndex++;
