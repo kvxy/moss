@@ -14,11 +14,11 @@ export class EventEmitter {
     this.eventMap.get(type)?.delete(listener);
   }
 
-  public triggerEvent(type: string, args?: any[]) {
+  public triggerEvent(type: string, ...args: any[]) {
     const listeners = this.eventMap.get(type);
     if (!listeners) return;
     for (let listener of listeners) {
-      listener(args);
+      listener(...args);
     }
   }
 }

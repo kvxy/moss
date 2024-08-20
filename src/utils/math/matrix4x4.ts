@@ -1,9 +1,12 @@
+import { EventEmitter } from '../event-emitter';
 import { Vector3 } from './vector';
 
-export class Matrix4x4 {
+export class Matrix4x4 extends EventEmitter {
   public data!: Float32Array;
+  public readonly byteLength = 16 * 4;
 
   constructor(data?: number[]) {
+    super();
     if (data) {
       if (data.length !== 16) throw new Error('Supplied data not length 16!');
       this.data = new Float32Array(data);
@@ -19,6 +22,7 @@ export class Matrix4x4 {
       0, 0, 1, 0,
       0, 0, 0, 1
     ]);
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public makePerspective(fov: number, aspect: number, near: number, far: number) {
@@ -33,6 +37,7 @@ export class Matrix4x4 {
       0,  0,  a, -1,
       0,  0,  b,  0
     ]);
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public makeOrthogonal() {
@@ -52,6 +57,7 @@ export class Matrix4x4 {
     d[13] += x * d[1] + y * d[5] + z * d[9];
     d[14] += x * d[2] + y * d[6] + z * d[10];
     d[15] += x * d[3] + y * d[7] + z * d[11];
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public scale(x: number, y: number, z: number): void;
@@ -75,6 +81,7 @@ export class Matrix4x4 {
     d[9] *= z;
     d[10] *= z;
     d[11] *= z;
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public rotateX(theta: number) {
@@ -91,6 +98,7 @@ export class Matrix4x4 {
     d[9]  = -s * d5 + c * d9;
     d[10] = -s * d6 + c * d10;
     d[11] = -s * d7 + c * d11;
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public rotateY(theta: number) {
@@ -107,6 +115,7 @@ export class Matrix4x4 {
     d[9]  = -s * d1 + c * d9;
     d[10] = -s * d2 + c * d10;
     d[11] = -s * d3 + c * d11;
+    this.triggerEvent('onUpdate', this.data);
   }
 
   public rotateZ(theta: number) {
@@ -123,5 +132,6 @@ export class Matrix4x4 {
     d[5] = -s * a1 + c * d5;
     d[6] = -s * a2 + c * d6;
     d[7] = -s * a3 + c * d7;
+    this.triggerEvent('onUpdate', this.data);
   }
 }

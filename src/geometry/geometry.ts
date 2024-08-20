@@ -45,7 +45,7 @@ export class Geometry {
       vertexBuffer.createAttribute('color', { format: descriptor.attributeFormats?.color ?? 'uint8x4' });
       this.vertexBuffers.set('default', vertexBuffer);
     }
-    if (descriptor.useIndices !== false) {
+    if (descriptor.useIndices === true) {
       this.indexBuffer = new GeometryBuffer({
         label: `${this.label} Index Buffer`,
         arrayView: descriptor.indices,
@@ -139,6 +139,7 @@ export class Geometry {
       if (!geometryBuffer.gpuBuffer) {
         geometryBuffer.bindDevice(device);
         geometryBuffer.createGPUBuffer();
+        geometryBuffer.updateGPUBuffer();
       }
     });
   }

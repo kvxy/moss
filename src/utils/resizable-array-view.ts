@@ -28,7 +28,6 @@ export class ResizableArrayView {
     return this.buffer.byteLength;
   }
 
-
   /** Size in bytes of total length used. */
   public get byteLength(): number {
     return this._byteLength;
@@ -43,6 +42,7 @@ export class ResizableArrayView {
     (new Uint8Array(buffer)).set(this.typedArrays.get('uint8') ?? new Uint8Array(this.buffer));
     this.typedArrays = new Map(); // reset internal typedArrays
     this.buffer = buffer;
+    this._byteLength = Math.min(this._byteLength, byteLength);
   }
 
   /** Sets capacity (in bytes) to minimum power of `factor` needed to contain parameter `upper`.
@@ -79,5 +79,11 @@ export class ResizableArrayView {
     const typedArray = this.getTypedArray(TypedArrayMapping.getFormat(data.constructor as TypedArrayConstructor));
     typedArray.set(data, offset);
     this._byteLength = Math.max(this._byteLength, data.byteLength + offset);
+  }
+
+  public put(num: number, index: number, format: TypedArrayFormat) {
+    const typedArray = this.getTypedArray(format);
+    typedArray[index] = num;
+    this._byteLength = Math.max(this._byteLength, (index + 1) * TypedArrayMapping.getConstructor(format).BYTES_PER_ELEMENT);
   }
 }

@@ -1,6 +1,5 @@
 import { EventEmitter } from '../utils/event-emitter';
 import { ResizableArrayView } from '../utils/resizable-array-view';
-import { Geometry } from './geometry';
 
 export type GeometryBufferDescriptor = {
   label?: string, 
@@ -44,8 +43,7 @@ export class GeometryBuffer extends EventEmitter {
   /** Creates internal buffer using given device. Destroys already existing buffer if there is one. */
   public createGPUBuffer() {
     const device = this.device;
-    if (!device) throw new Error('No GPUDevice binded.')
-
+    if (!device) throw new Error('No GPUDevice binded.');
     if (this.gpuBuffer) this.gpuBuffer.destroy();
     this.gpuBuffer = device.createBuffer({
       label: this.label,
@@ -66,11 +64,12 @@ export class GeometryBuffer extends EventEmitter {
     if (!this.device) throw new Error('No GPUDevice binded.');
     if (!this.gpuBuffer) throw new Error('GPUBuffer not created.');
     const upper = (size ? (offset + size) : this.arrayView.byteLength);
+  
     if (this.gpuBuffer.size < upper) {
       this.size = upper;
       this.createGPUBuffer();
     }
-    this.device.queue.writeBuffer(this.gpuBuffer, offset, this.arrayView.buffer, offset, size);
+    this.device.queue.writeBuffer(this.gpuBuffer, offset, this.arrayView.buffer, offset, upper);
   }
 
   /** 

@@ -1,6 +1,5 @@
 import { Geometry } from '../geometry/geometry';
 import { Material } from '../material/material';
-import { ID } from '../utils/id';
 import { Matrix4x4 } from '../utils/math/matrix4x4';
 import { Object3D } from './object3d';
 
@@ -45,17 +44,34 @@ export class Mesh extends Object3D {
       this.geometry.initializeGPUBuffers();
       this.geometry.createBindGroup();
     }
-
-    /*this.gpuBuffers.set('matrixBuffer', device.createBuffer({
-      label: `Mesh ${this.label} Matrix Buffer`,
-      size: this.matrix.data.byteLength,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    }));*/
+    this.createGPUBuffers();
 
     this.gpuInitialized = true;
   }
 
+  /** Creeates matrix buffer for this mesh. */
+  public createGPUBuffers() {
+    const device = this.device;
+    if (!device) throw new Error('No GPUDevice binded');
+    if (this.gpuBuffers.get('matrixBuffer') !== undefined) return;
+
+    const buffer = device.createBuffer({
+      label: `Mesh ${this.label} Matrix Buffer`,
+      size: this.matrix.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+    this.gpuBuffers.set('matrixBuffer', buffer);
+
+    device.queue.writeBuffer(buffer, 0, this.matrix.data);
+    this.matrix.addEventListener('onUpdate', () => {
+      device.queue.writeBuffer(buffer, 0, this.matrix.data);
+    });
+  }
+
+  /** Destroys mesh buffers. */
   public destroy() {
-    throw new Error('Method unimplemented.');
+    for (let [ _key, buffer ] of this.gpuBuffers) {
+      buffer.destroy();
+    }
   }
 }

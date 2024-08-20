@@ -24,8 +24,6 @@ const mesh = new MOSS.Mesh({
 });
 scene.addMesh(mesh);
 
-console.log(geometry);
-
 function tick() {
   engine.render(scene);
   requestAnimationFrame(tick);

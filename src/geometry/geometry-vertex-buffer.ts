@@ -135,10 +135,10 @@ export class GeometryVertexBuffer extends GeometryBuffer {
         verticesCount = upper / attribute.components; // number of vertices written to 
 
     this.arrayView.increase((vertexOffset + verticesCount) * this.arrayStride);
-    const typedArray = this.arrayView.getTypedArray(this.getTypedArrayFormat(attribute.format));
+    const format = this.getTypedArrayFormat(attribute.format);
 
     while(counter < upper) {
-      typedArray[writeIndex] = data[readIndex];
+      this.arrayView.put(data[readIndex], writeIndex, format);
       counter++;
       readIndex++;
       writeIndex++;
