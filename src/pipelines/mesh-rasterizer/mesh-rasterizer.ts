@@ -1,7 +1,7 @@
 import { RenderTarget } from '../../core/render-target';
 import { Scene } from '../../core/scene';
 import { Vector3 } from '../../moss';
-import { Mesh } from '../../objects/mesh';
+import { Mesh } from '../../objects/mesh2';
 import { RenderPipeline } from '../pipeline';
 
 import meshShader from './mesh-shader.wgsl?raw';

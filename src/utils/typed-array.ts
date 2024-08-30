@@ -40,6 +40,7 @@ export type TypedArrayFormat = typeof typedArrayFormats[number];
 const constructorFormatMap = new Map<TypedArrayConstructor, TypedArrayFormat>(typedArrayConstructors.map((constructor, i) => [ constructor, typedArrayFormats[i] ]));
 const formatConstructorMap = new Map<TypedArrayFormat, TypedArrayConstructor>(typedArrayConstructors.map((constructor, i) => [ typedArrayFormats[i], constructor ]));
 
+/** Conversion between typed array formats and their respective constructors. */
 export const TypedArrayMapping = {
   getFormat: function(constructor: TypedArrayConstructor): TypedArrayFormat {
     const str = constructorFormatMap.get(constructor);

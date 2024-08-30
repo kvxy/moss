@@ -1,6 +1,6 @@
-import { Geometry } from './geometry/geometry';
+import { Geometry } from './geometry/goemetry';
 import { Material } from './material/material';
-import { Mesh } from './objects/mesh';
+import { Mesh } from './objects/mesh2';
 import { Scene } from './core/scene';
 import { Color } from './utils/math/color';
 import { Vector, Vector2, Vector3 } from './utils/math/vector';

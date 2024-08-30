@@ -5,10 +5,11 @@ export class Matrix4x4 extends EventEmitter {
   public data!: Float32Array;
   public readonly byteLength = 16 * 4;
 
-  constructor(data?: number[]) {
+  constructor(data?: ArrayLike<number> | ArrayBufferLike) {
     super();
     if (data) {
-      if (data.length !== 16) throw new Error('Supplied data not length 16!');
+      if ('length' in data && data.length !== 16) throw new Error('Supplied array is not length 16!');
+      if ('byteLength' in data && data.byteLength < this.byteLength) throw new Error(`Supplied buffer does not have ${this.byteLength} bytes!`);
       this.data = new Float32Array(data);
     } else {
       this.makeIdentity();
@@ -16,7 +17,7 @@ export class Matrix4x4 extends EventEmitter {
   }
 
   public makeIdentity() {
-    this.data = new Float32Array([
+    this.data.set([
       1, 0, 0, 0,
       0, 1, 0, 0,
       0, 0, 1, 0,
@@ -31,7 +32,7 @@ export class Matrix4x4 extends EventEmitter {
           nf = 1 / (near - far),
           a  = (near + far) * nf,
           b  = 2 * near * far * nf;
-    this.data = new Float32Array([
+    this.data.set([
       fx, 0,  0,  0,
       0,  fy, 0,  0,
       0,  0,  a, -1,

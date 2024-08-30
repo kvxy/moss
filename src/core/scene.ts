@@ -1,6 +1,7 @@
 import { Camera } from '../camera/camera';
 import { PerspectiveCamera } from '../camera/perspective-camera';
-import { Mesh } from '../objects/mesh';
+import { Mesh } from '../objects/mesh2';
+import { Object3D } from '../objects/object3d';
 
 export class Scene {
   public static bindGroupLayoutDescriptor: GPUBindGroupLayoutDescriptor = {
@@ -15,13 +16,28 @@ export class Scene {
   public device?: GPUDevice;
   public bindGroup?: GPUBindGroup;
 
-  public meshes: Map<string, Mesh> = new Map();
+  public objects: Map<string, Object3D> = new Map();
+  // public displayGroups: Map<string, Set<Object3D>>;
+  public meshes: Set<Mesh> = new Set();
+
   public camera: Camera = new PerspectiveCamera();
 
-  constructor() {}
+  constructor() {  }
 
-  public addMesh(mesh: Mesh) {
-    this.meshes.set(mesh.id.toString(), mesh);
+  public addObject(object: Object3D) {
+    this.objects.set(object.id.toString(), object);
+    if ('isMesh' in object && object.isMesh) {
+      this.meshes.add(object as Mesh);
+    }
+  }
+
+  public deleteObject(object: Object3D) {
+    const id = object.id.toString();
+    if (!this.objects.has(id)) return console.warn(`Object ${object.label} is not in the scene.`);
+    this.objects.delete(id);
+    if ('isMesh' in object && object.isMesh) {
+      this.meshes.delete(object as Mesh);
+    }
   }
 
   public setCamera(camera: Camera) {
