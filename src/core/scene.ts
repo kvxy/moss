@@ -1,6 +1,6 @@
 import { Camera } from '../camera/camera';
 import { PerspectiveCamera } from '../camera/perspective-camera';
-import { Mesh } from '../objects/mesh2';
+import { Mesh } from '../objects/mesh';
 import { Object3D } from '../objects/object3d';
 
 export class Scene {

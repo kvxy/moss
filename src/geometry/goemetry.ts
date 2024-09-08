@@ -1,13 +1,16 @@
 import { BufferView } from '../utils/buffer-view';
 import { SetAttributeOptions, VertexBuffer } from './vertex-buffer';
 
-export type GeometryBufferDescriptor = {
+export type GeometryVertexBufferOptions = {
   /** Name of buffer. */
-  name: string,
+  //name: string,
   /** Optional label of buffer. */
   label?: string,
   /** Size of buffer in bytes. */
-  size: number,
+  //size: number,
+  /** Vertex buffer slot to set. */
+  slot?: number,
+  /** Mapped at creation. */
   mappedAtCreation?: boolean
 };
 
@@ -43,7 +46,9 @@ export class Geometry {
   ];
 
   private device?: GPUDevice;
-  private vertexBuffers: Map<string, VertexBuffer> = new Map();
+  public vertexBuffers: Map<string, VertexBuffer> = new Map();
+  /** Vertex buffer slots used. */
+  private vertexBufferSlots: number[] = [];
   private _layoutsKey?: string;
   /** Describes which vertex buffers holds which attributes. */
   private attributeBufferName: Map<string, string> = new Map();
@@ -78,22 +83,19 @@ export class Geometry {
     }
   }
 
-  public createBuffer(descriptor: GeometryBufferDescriptor): this {
-    if (this.vertexBuffers.has(descriptor.name)) throw new Error(`Vertex buffer with ${descriptor.name} already exists in geometry.`);
-    this.vertexBuffers.set(descriptor.name, new VertexBuffer(descriptor));
-    return this;
-  }
-
-  /** @returns an available (minimal) shader location. */
-  private getAvailableShaderLocation(): number {
-    // not optimal but it's fine since shaderLocations won't be that large anyways
-    this.shaderLocations.sort();
-    let location = 0;
-    for (let i = 0; i < this.shaderLocations.length; i++) {
-      if (location !== this.shaderLocations[i]) break; // found available location
-      location++;
+  /** 
+   * @param array The supplied array.
+   * @returns minimal unsigned integer not in given array. 
+   */
+  private getAvailableHelper(array: number[]) {
+    // not optimal but it's fine since given arrays won't be that large anyways for the use cases
+    array.sort();
+    let num = 0;
+    for (let i = 0; i < array.length; i++) {
+      if (num !== array[i]) break; // found available location
+      num++;
     }
-    return location;
+    return num;
   }
 
   /**
@@ -107,6 +109,33 @@ export class Geometry {
   }
 
   /**
+   * Marks shader location as used.
+   * @param location The location to mark.
+   */
+  private markVertexBufferSlot(slot: number) {
+    if (this.vertexBufferSlots.indexOf(slot) !== -1)
+      throw new Error(`Vertex buffer slot ${slot} is already in use!`);
+    this.vertexBufferSlots.push(slot);
+  }
+
+  /**
+   * Creates new vertex buffer for geometry.
+   * @param descriptor Descriptor of vertex buffer.
+   * @returns this.
+   */
+  public createBuffer(name: string, size: number, options: GeometryVertexBufferOptions): this {
+    if (this.vertexBuffers.has(name)) throw new Error(`Vertex buffer with ${name} already exists in geometry.`);
+    const slot = options.slot ?? this.getAvailableHelper(this.vertexBufferSlots);
+    this.markVertexBufferSlot(slot);
+    this.vertexBuffers.set(name, new VertexBuffer({
+      label: `Geometry Vertex Buffer ${name}`,
+      size: size,
+      ...options
+    }));
+    return this;
+  }
+
+  /**
    * Creates an vertex attribute for the buffer.
    * @param key Key of the attribute.
    * @param attribute Description of the vertex attribute to create.
@@ -117,7 +146,7 @@ export class Geometry {
     const bufferName = options.bufferName ?? 'default';
     const vertexBuffer = this.vertexBuffers.get(bufferName);
     if (vertexBuffer === undefined) throw new Error(`Buffer ${bufferName} does not exist in geometry.`);
-    const location = options.shaderLocation ?? this.getAvailableShaderLocation();
+    const location = options.shaderLocation ?? this.getAvailableHelper(this.shaderLocations);
     vertexBuffer.createAttribute(bufferName, {
       format: format,
       shaderLocation: location,
@@ -168,7 +197,8 @@ export class Geometry {
    * @param device The device to bind to.
    */
   public gpuInitialize(device: GPUDevice) {
-    if (this.device) throw new Error('Geometry already gpu-initialized.');
+    //if (this.device) throw new Error('Geometry already gpu-initialized.');
+    if (this.device) return;
     this.device = device;
     this.indexBuffer?.createGPUBuffer(device);
     for (let vertexBuffer of this.vertexBuffers.values()) {

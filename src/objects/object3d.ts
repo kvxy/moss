@@ -8,6 +8,7 @@ export class Object3D {
   public id: ID;
   public label: string;
 
+  public device?: GPUDevice;
   public position: Vector3;
   public matrix: Matrix4x4;
   public matrixBuffer: BufferView;
@@ -22,5 +23,16 @@ export class Object3D {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
     this.position = new Vector3(0, 0, 0);
+  }
+
+  public gpuInitialize(device: GPUDevice) {
+    if (this.device !== undefined) throw new Error('Already initialized with device.');
+    this.device = device;
+    this.matrixBuffer.createGPUBuffer(device);
+  }
+
+  /** Destroys object3d buffers.*/
+  public destroy() {
+    this.matrixBuffer.destroy();
   }
 }

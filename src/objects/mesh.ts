@@ -23,7 +23,6 @@ export class Mesh extends Object3D {
 
   public readonly isMesh = true;
 
-  protected device?: GPUDevice;
   public bindGroup?: GPUBindGroup;
   public geometry: Geometry;
   public materials: Material[];  
@@ -36,19 +35,19 @@ export class Mesh extends Object3D {
   }
 
   /** 
-   * Sets the device of geometry, done automatically on render.
-   * @param device The GPUDevice to bind. 
+   * Creates all resources for this mesh (if needed), including geometry bind group / buffers, material bind group / buffers, mesh bind group / buffers. 
+   * Called internally.
+   * @param device The GPUDevice to initialize with and bind to.
    */
-  public bindDevice(device: GPUDevice) {
-    if (this.device !== undefined && this.device !== device) throw new Error('GPUDevice already binded.');
-    this.device = device;
+  public gpuInitialize(device: GPUDevice) {
+    super.gpuInitialize(device);
+    this.geometry.gpuInitialize(device);
+    // this.materials.gpuInitialize(device);
   }
 
-  /** Creates all resources for this mesh (if needed), including geometry bind group / buffers, material bind group / buffers, mesh bind group / buffers. */
-  
-
-  /** Destroys mesh buffers. Geometry and material are not destroyed. */
+  /** Destroys mesh buffers. Geometry and material resources are not destroyed. */
   public destroy() {
-    this.matrixBuffer.destroy();
+    super.destroy();
+    // destroy other mesh specific buffers when added..
   }
 }
