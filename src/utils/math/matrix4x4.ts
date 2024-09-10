@@ -2,7 +2,7 @@ import { EventEmitter } from '../event-emitter';
 import { Vector3 } from './vector';
 
 export class Matrix4x4 extends EventEmitter {
-  public data!: Float32Array;
+  public data: Float32Array;
   public readonly byteLength = 16 * 4;
 
   constructor(data?: ArrayLike<number> | ArrayBufferLike) {
@@ -12,6 +12,7 @@ export class Matrix4x4 extends EventEmitter {
       if ('byteLength' in data && data.byteLength < this.byteLength) throw new Error(`Supplied buffer does not have ${this.byteLength} bytes!`);
       this.data = new Float32Array(data);
     } else {
+      this.data = new Float32Array(16);
       this.makeIdentity();
     }
   }

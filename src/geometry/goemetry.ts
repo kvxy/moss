@@ -59,10 +59,9 @@ export class Geometry {
 
   constructor(descriptor: GeometryDescriptor = {}) {
     if (descriptor.default !== false) {
-      this.createBuffer({ 
+      this.createBuffer('default', 0, {
         label: 'Geometry Vertex Buffer',
-        name: 'default', 
-        size: 0
+        slot: 0
       });
       for (let attributeInfo of Geometry.defaultAttributes) {
         const format = (descriptor.attributeFormats ? descriptor.attributeFormats[attributeInfo.name] : undefined) ?? attributeInfo.format;
@@ -88,7 +87,7 @@ export class Geometry {
    * @returns minimal unsigned integer not in given array. 
    */
   private getAvailableHelper(array: number[]) {
-    // not optimal but it's fine since given arrays won't be that large anyways for the use cases
+    // not optimal but it's fine since given arrays won't be that large anyways for use cases
     array.sort();
     let num = 0;
     for (let i = 0; i < array.length; i++) {
@@ -109,8 +108,8 @@ export class Geometry {
   }
 
   /**
-   * Marks shader location as used.
-   * @param location The location to mark.
+   * Marks vertex buffer slot as used.
+   * @param slot The slot to mark.
    */
   private markVertexBufferSlot(slot: number) {
     if (this.vertexBufferSlots.indexOf(slot) !== -1)
@@ -120,7 +119,9 @@ export class Geometry {
 
   /**
    * Creates new vertex buffer for geometry.
-   * @param descriptor Descriptor of vertex buffer.
+   * @param name Name of vertex buffer (must be unique per geometry).
+   * @param size Size in bytes of vertex buffer.
+   * @param options Options for vertex buffer creation.
    * @returns this.
    */
   public createBuffer(name: string, size: number, options: GeometryVertexBufferOptions): this {
@@ -136,6 +137,17 @@ export class Geometry {
   }
 
   /**
+   * Gets the vertex buffer with the given name, throws error if buffer does not exist in geometry.
+   * @param name Name of vertex buffer.
+   * @returns the vertex buffer with given name.
+   */
+  public requireBuffer(name: string): VertexBuffer {
+    const vertexBuffer = this.vertexBuffers.get(name);
+    if (!vertexBuffer) throw new Error(`Vertex buffer ${name} not found in geometry.`);
+    return vertexBuffer;
+  }
+
+  /**
    * Creates an vertex attribute for the buffer.
    * @param key Key of the attribute.
    * @param attribute Description of the vertex attribute to create.
@@ -146,8 +158,9 @@ export class Geometry {
     const bufferName = options.bufferName ?? 'default';
     const vertexBuffer = this.vertexBuffers.get(bufferName);
     if (vertexBuffer === undefined) throw new Error(`Buffer ${bufferName} does not exist in geometry.`);
+    this.attributeBufferName.set(name, bufferName);
     const location = options.shaderLocation ?? this.getAvailableHelper(this.shaderLocations);
-    vertexBuffer.createAttribute(bufferName, {
+    vertexBuffer.createAttribute(name, {
       format: format,
       shaderLocation: location,
       offset: options.offset

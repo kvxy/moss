@@ -1,15 +1,15 @@
 import { Geometry } from './geometry/goemetry';
 import { Material } from './material/material';
-import { Mesh } from './objects/mesh2';
+import { Mesh } from './objects/mesh';
 import { Scene } from './core/scene';
 import { Color } from './utils/math/color';
 import { Vector, Vector2, Vector3 } from './utils/math/vector';
-import { Engine } from './core/engine';
+import { WebGPUEngine } from './core/webgpu-engine';
 import { Matrix4x4 } from './utils/math/matrix4x4';
 
 export {
   // Core
-  Engine,
+  WebGPUEngine,
   Scene,
 
   // Meshing

@@ -14,6 +14,7 @@ export type MeshRasterizerOptions = {
   height?: number
 };
 
+/** Rasterizes regular mesh objects. */
 export class MeshRasterizer {
 
   public device: GPUDevice;
@@ -27,7 +28,7 @@ export class MeshRasterizer {
 
     // vertex buffers
     const vertexBufferLayout: GPUVertexBufferLayout = {
-      arrayStride: 4 * 5,
+      arrayStride: 4 * 4,
       attributes: [{
         format: 'float32x3', // position
         offset: 0,
@@ -78,10 +79,12 @@ export class MeshRasterizer {
         format: 'depth24plus'
       }
     });
-
   }
 
-  /** Render pass */
+  /**
+   * Executes one pass of the mesh rasterizer pipeline.
+   * @param data Data required for mesh rasterizing pass.
+   */
   public pass(data: MeshRasterizerPassData) {
     const encoder = data.encoder;
     const renderPass = encoder.beginRenderPass({
@@ -100,6 +103,14 @@ export class MeshRasterizer {
     });
     
     renderPass.setPipeline(this.pipeline);
+    
+    for (let mesh of data.scene.meshes) {
+      mesh.gpuInitialize(this.device);
+      renderPass.setVertexBuffer(0, mesh.geometry.requireBuffer('default').gpuBuffer as GPUBuffer);
+      renderPass.draw(3);
+    }
+
+    renderPass.end();
     
   }
 

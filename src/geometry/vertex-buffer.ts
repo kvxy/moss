@@ -107,7 +107,7 @@ export class VertexBuffer extends BufferView {
       shaderLocation: attribute.shaderLocation,
 
       byteSize: byteSize,
-      components: componentBytes,
+      components: components,
       componentBytes: componentBytes
     });
 
@@ -139,6 +139,7 @@ export class VertexBuffer extends BufferView {
     return (type === 'float' ? type + bits : sign + type + bits) as TypedArrayFormat; 
   }
 
+  // TODO: Clean up this function
   /**
    * Sets vertex data for a single attribute.
    * @param key Key of attribute.
@@ -193,8 +194,9 @@ export class VertexBuffer extends BufferView {
     if (this.device) throw new Error('VertexBuffer already gpu-initialized.');
     this.device = device;
 
-    // create buffer
+    // create & update buffer
     this.createGPUBuffer(device);
+    this.updateGPUBuffer();
 
     // cache attributes as it is now inmutable (attribute layout not attribute data)
     if (this.cacheKey === undefined) {

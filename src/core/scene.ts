@@ -4,7 +4,7 @@ import { Mesh } from '../objects/mesh';
 import { Object3D } from '../objects/object3d';
 
 export class Scene {
-  public static bindGroupLayoutDescriptor: GPUBindGroupLayoutDescriptor = {
+  public static readonly bindGroupLayoutDescriptor: GPUBindGroupLayoutDescriptor = {
     label: 'Scene Bind Group Layout',
     entries: [{
       binding: 0, // camera matrices
@@ -17,7 +17,6 @@ export class Scene {
   public bindGroup?: GPUBindGroup;
 
   public objects: Map<string, Object3D> = new Map();
-  // public displayGroups: Map<string, Set<Object3D>>;
   public meshes: Set<Mesh> = new Set();
 
   public camera: Camera = new PerspectiveCamera();
@@ -26,8 +25,8 @@ export class Scene {
 
   public addObject(object: Object3D) {
     this.objects.set(object.id.toString(), object);
-    if ('isMesh' in object && object.isMesh) {
-      this.meshes.add(object as Mesh);
+    if (object instanceof Mesh) {
+      this.meshes.add(object);
     }
   }
 
@@ -35,8 +34,8 @@ export class Scene {
     const id = object.id.toString();
     if (!this.objects.has(id)) return console.warn(`Object ${object.label} is not in the scene.`);
     this.objects.delete(id);
-    if ('isMesh' in object && object.isMesh) {
-      this.meshes.delete(object as Mesh);
+    if (object instanceof Mesh) {
+      this.meshes.delete(object);
     }
   }
 

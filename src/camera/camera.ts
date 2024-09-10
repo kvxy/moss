@@ -1,6 +1,8 @@
 import { Matrix4x4 } from '../utils/math/matrix4x4';
 import { Vector3 } from '../utils/math/vector';
 
+// TODO: make better camera that extends object3d
+
 export abstract class Camera {
   public static byteSize = 16 * 4 * 2;
 
@@ -8,7 +10,7 @@ export abstract class Camera {
   public rotation: Vector3 = new Vector3(0, 0, 0);
 
   public projectionMatrix: Matrix4x4  = new Matrix4x4();
-  public worldMatrix: Matrix4x4  = new Matrix4x4();;
+  public worldMatrix: Matrix4x4  = new Matrix4x4();
 
   protected device?: GPUDevice;
   protected matrixBuffer?: GPUBuffer;

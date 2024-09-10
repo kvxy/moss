@@ -1,7 +1,5 @@
 import { Geometry } from '../geometry/goemetry';
 import { Material } from '../material/material';
-import { BufferView } from '../utils/buffer-view';
-import { Matrix4x4 } from '../utils/math/matrix4x4';
 import { Object3D } from './object3d';
 
 export type MeshDescriptor = {
@@ -12,24 +10,17 @@ export type MeshDescriptor = {
 
 /** Renderable mesh. Holds geometry, material, and per-mesh data. */
 export class Mesh extends Object3D {
-  public static bindGroupLayoutDescriptor: GPUBindGroupLayoutDescriptor = {
-    label: 'Mesh Bind Group Layout',
-    entries: [{
-      binding: 0, // mesh model matrix
-      visibility: GPUShaderStage.VERTEX,
-      buffer: {}
-    }]
-  };
-
   public readonly isMesh = true;
 
   public bindGroup?: GPUBindGroup;
   public geometry: Geometry;
-  public materials: Material[];  
+  public materials: Material[];
+
+  /** If true (default), mesh will be rendered. */
+  public display: Boolean = true;
 
   constructor(descriptor: MeshDescriptor) {
     super(descriptor.label);
-
     this.geometry = descriptor.geometry;
     this.materials = [ descriptor.material ];
   }

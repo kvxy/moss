@@ -7,8 +7,12 @@ export type BufferViewDescriptor = {
   usage: number,
   type?: 'ArrayBuffer' | 'SharedArrayBuffer',
   arrayBuffer?: ArrayBufferLike,
-  resizable?: boolean
-}
+  resizable?: boolean,
+} & ({ // require either arrayBuffer or size
+  arrayBuffer: ArrayBufferLike
+} | {
+  size: number
+});
 
 /** Holds GPUBuffer and ArrayBuffer, allows for easy editing of ArrayBuffer and updating data into GPUBuffer. */
 export class BufferView {
@@ -34,7 +38,7 @@ export class BufferView {
       return;
     }
     
-    if (!descriptor.size) throw new Error('Either size or arrayBuffer must be supplied in BufferViewDescriptor.');
+    if (descriptor.size === undefined) throw new Error('Either size or arrayBuffer must be supplied in BufferViewDescriptor.');
     if (descriptor.type === 'SharedArrayBuffer') {
       this._arrayBuffer = new SharedArrayBuffer(descriptor.size);
     } else {
@@ -42,11 +46,11 @@ export class BufferView {
     }
   }
 
-  protected get arrayBuffer(): ArrayBufferLike {
+  public get arrayBuffer(): ArrayBufferLike {
     return this._arrayBuffer;
   }
 
-  protected get gpuBuffer(): GPUBuffer | undefined {
+  public get gpuBuffer(): GPUBuffer | undefined {
     return this._gpuBuffer;
   }
 

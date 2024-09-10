@@ -1,13 +1,17 @@
+import { EventEmitter } from '../event-emitter';
+
 /** General vector class. **/
-export class Vector {
+export class Vector extends EventEmitter {
   [index: number]: number;
 
+  private prev: number[];
   private dimension: number;
 
   constructor(vector: Vector);
   constructor(dimension?: number);
   constructor(array: ArrayLike<number>);
   constructor(data: Vector | number | ArrayLike<number> | undefined) {
+    super();
     if (data === undefined) {
       this.dimension = 0;
     } else if (typeof data === 'number') {
@@ -23,9 +27,10 @@ export class Vector {
       for (let i = 0; i < data.length; i++)
         this[i] = data[i];
     }
+    this.prev = new Array(this.dimension).fill(0);
   }
 
-  public static projection(u: Vector, v: Vector) {
+  /*public static projection(u: Vector, v: Vector) {
     const scalar = Vector.dot(u, v) / Vector.dot(v, v);
     return new Vector(v).scale(scalar);
   }
@@ -36,12 +41,13 @@ export class Vector {
     for (let i = 0; i < u.dimension; i++)
       out += u[i] * v[i];
     return out;
-  }
+  }*/
 
   public copy(other: this) {
     this.dimension = other.dimension;
     for (let i = 0; i < other.dimension; i++)
       this[i] = other[i];
+    this.onUpdate();
   }
 
   public clone(): this {
@@ -53,6 +59,7 @@ export class Vector {
     const vector: this = modify ? this : this.clone();
     for (let i = 0; i < vector.dimension; i++)
       vector[i] += other[i];
+    this.onUpdate();
     return vector;
   }
 
@@ -61,6 +68,7 @@ export class Vector {
     for (let i = 0; i < upper; i++) {
       this[i] = numbers[i];
     }
+    this.onUpdate();
     return this;
   }
 
@@ -76,7 +84,20 @@ export class Vector {
       for (let i = 0; i < vector.dimension; i++)
         vector[i] *= scalar[i];
     }
+    this.onUpdate();
     return vector;
+  }
+
+  protected onUpdate() {
+    this.triggerEvent('onUpdate', this.prev);
+    for (let i = 0; i < this.dimension; i++) {
+      this.prev[i] = this[i];
+    }
+  }
+
+  public addEventListener(type: 'onUpdate', listener: (previous: number[]) => void): void;
+  public addEventListener(type: string, listener: Function) {
+    super.addEventListener(type, listener);
   }
 
   public fromJSON(json: any): this {
@@ -119,10 +140,12 @@ export class Vector2 extends Vector {
 
   public set x(num: number) {
     this[0] = num;
+    this.onUpdate();
   }
 
   public set y(num: number) {
     this[1] = num;
+    this.onUpdate();
   }
 }
 
