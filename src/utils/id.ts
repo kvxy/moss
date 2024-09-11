@@ -1,4 +1,4 @@
-// 16 byte id
+/** 16 byte ID (similar to UUID) */
 export class ID {
   public static readonly VERSION: number = 1;
 
@@ -9,6 +9,10 @@ export class ID {
   private data: Uint32Array = new Uint32Array(4);
   private str?: string;
 
+  /**
+   * ID constructor
+   * @param data Given data must be length 4 (16 bytes) and is used in place of randomly generated ID.
+   */
   constructor(data?: Uint32Array) {
     if (data && data?.length !== 4) throw new Error('Given ID data is not of length 4.');
     if (data) {
@@ -21,8 +25,10 @@ export class ID {
     }
   }
 
+  /** @returns a hexadecimal-stringified version of the ID. */
   public toString(): string {
-    if (this.str === undefined) this.str = [...this.data].map(number => number.toString(16).padStart(8, '0')).join('-');;
+    if (this.str === undefined) 
+      this.str = [...this.data].map(number => number.toString(16).padStart(8, '0')).join('-');;
     return this.str;
   }
 }

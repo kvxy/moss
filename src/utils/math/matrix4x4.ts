@@ -1,12 +1,11 @@
-import { EventEmitter } from '../event-emitter';
+// import { EventEmitter } from '../event-emitter';
 import { Vector3 } from './vector';
 
-export class Matrix4x4 extends EventEmitter {
+export class Matrix4x4 /*extends EventEmitter*/ {
   public data: Float32Array;
   public readonly byteLength = 16 * 4;
 
   constructor(data?: ArrayLike<number> | ArrayBufferLike) {
-    super();
     if (data) {
       if ('length' in data && data.length !== 16) throw new Error('Supplied array is not length 16!');
       if ('byteLength' in data && data.byteLength < this.byteLength) throw new Error(`Supplied buffer does not have ${this.byteLength} bytes!`);
@@ -17,6 +16,7 @@ export class Matrix4x4 extends EventEmitter {
     }
   }
 
+  /** Turns matrix into an identity matrix. */
   public makeIdentity() {
     this.data.set([
       1, 0, 0, 0,
@@ -24,9 +24,16 @@ export class Matrix4x4 extends EventEmitter {
       0, 0, 1, 0,
       0, 0, 0, 1
     ]);
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
+  /**
+   * Turns matrix into a perspective projection matrix.
+   * @param fov Field of view of projection matrix.
+   * @param aspect Aspect ratio of projection matrix.
+   * @param near Z-near.
+   * @param far Z-far.
+   */
   public makePerspective(fov: number, aspect: number, near: number, far: number) {
     const fy = 1 / Math.tan(fov * 0.5),
           fx = fy / aspect,
@@ -39,14 +46,24 @@ export class Matrix4x4 extends EventEmitter {
       0,  0,  a, -1,
       0,  0,  b,  0
     ]);
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
-  public makeOrthogonal() {
-    
-  }
+  /* public makeOrthogonal() {
+    throw new Error('Unimplemented');
+  } */
 
+  /**
+   * Translates the matrix.
+   * @param x X translation.
+   * @param y Y translation.
+   * @param z Z translation.
+   */
   public translate(x: number, y: number, z: number): void;
+  /**
+   * Translate the matrix.
+   * @param translation The translation vector.
+   */
   public translate(translation: Vector3): void;
   public translate(x: number | Vector3, y: number = 1, z: number = 1) {
     if (typeof x === 'object') {
@@ -59,10 +76,20 @@ export class Matrix4x4 extends EventEmitter {
     d[13] += x * d[1] + y * d[5] + z * d[9];
     d[14] += x * d[2] + y * d[6] + z * d[10];
     d[15] += x * d[3] + y * d[7] + z * d[11];
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
+  /**
+   * Scales the matrix.
+   * @param x X scale.
+   * @param y Y scale.
+   * @param z Z scale.
+   */
   public scale(x: number, y: number, z: number): void;
+  /**
+   * Scales the matrix.
+   * @param translation The scaling vector.
+   */
   public scale(translation: Vector3): void;
   public scale(x: number | Vector3, y: number = 1, z: number = 1) {
     if (typeof x === 'object') {
@@ -83,9 +110,13 @@ export class Matrix4x4 extends EventEmitter {
     d[9] *= z;
     d[10] *= z;
     d[11] *= z;
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
+  /**
+   * Rotates the matrix around the X axis.
+   * @param theta Angle of rotation in radians.
+   */
   public rotateX(theta: number) {
     const d = this.data,
           s = Math.sin(theta),
@@ -100,9 +131,13 @@ export class Matrix4x4 extends EventEmitter {
     d[9]  = -s * d5 + c * d9;
     d[10] = -s * d6 + c * d10;
     d[11] = -s * d7 + c * d11;
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
+  /**
+   * Rotates the matrix around the Y axis.
+   * @param theta Angle of rotation in radians.
+   */
   public rotateY(theta: number) {
     const d = this.data,
           s = Math.sin(theta),
@@ -117,9 +152,13 @@ export class Matrix4x4 extends EventEmitter {
     d[9]  = -s * d1 + c * d9;
     d[10] = -s * d2 + c * d10;
     d[11] = -s * d3 + c * d11;
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 
+  /**
+   * Rotates the matrix around the Z axis.
+   * @param theta Angle of rotation in radians.
+   */
   public rotateZ(theta: number) {
     const d = this.data,
           s = Math.sin(theta),
@@ -134,6 +173,6 @@ export class Matrix4x4 extends EventEmitter {
     d[5] = -s * a1 + c * d5;
     d[6] = -s * a2 + c * d6;
     d[7] = -s * a3 + c * d7;
-    this.triggerEvent('onUpdate', this.data);
+    // this.triggerEvent('onUpdate', this.data);
   }
 }

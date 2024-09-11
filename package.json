@@ -1,7 +1,7 @@
 {
   "name": "moss",
   "version": "0.1.0",
-  "description": "Simple WebGPU Rendering Library",
+  "description": "WebGPU Rendering Library",
   "author": "kvxy",
   "scripts": {
     "engine:tsc": "tsc --project src",

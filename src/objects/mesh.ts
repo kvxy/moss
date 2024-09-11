@@ -12,7 +12,6 @@ export type MeshDescriptor = {
 export class Mesh extends Object3D {
   public readonly isMesh = true;
 
-  public bindGroup?: GPUBindGroup;
   public geometry: Geometry;
   public materials: Material[];
 
