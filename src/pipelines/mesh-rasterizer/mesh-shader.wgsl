@@ -3,6 +3,13 @@ struct VertexOutput {
   @location(0) color: vec4f
 }
 
+struct Mesh {
+  model: mat4x4f
+}
+
+@group(0) @binding(0)
+var<uniform> mesh: Mesh;
+
 @vertex
 fn vertex(
   @location(0) position: vec3f,
@@ -10,7 +17,7 @@ fn vertex(
   @builtin(vertex_index) vertexIndex: u32
 ) -> VertexOutput {
   var output: VertexOutput;
-  output.position = vec4f(position, 1.0);
+  output.position = mesh.model * vec4f(position, 1.0);
   output.color = vec4f(color) / 255.0;
   return output;
 }

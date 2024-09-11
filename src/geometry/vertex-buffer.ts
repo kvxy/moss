@@ -54,6 +54,7 @@ export type VertexBufferDescriptor = {
   size: number,
   arrayStride?: number,
   stepMode?: GPUVertexStepMode
+  slot?: number
 };
 
 export class VertexBuffer extends BufferView {
@@ -69,6 +70,7 @@ export class VertexBuffer extends BufferView {
 
   private arrayStride: number;
   private stepMode?: GPUVertexStepMode;
+  public readonly slot: number;
 
   constructor(descriptor: VertexBufferDescriptor) {
     super({
@@ -80,6 +82,7 @@ export class VertexBuffer extends BufferView {
     });
     this.arrayStride = descriptor.arrayStride ?? 0;
     this.stepMode = descriptor.stepMode;
+    this.slot = descriptor.slot ?? 0;
   }
 
   /**

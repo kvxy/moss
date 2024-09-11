@@ -82,6 +82,14 @@ export class Geometry {
     }
   }
 
+  /** @returns a clone of the geometry. */
+  /* public clone(): Geometry {
+    return new Geometry({
+      default: false,
+
+    })
+  }*/
+
   /** 
    * @param array The supplied array.
    * @returns minimal unsigned integer not in given array. 

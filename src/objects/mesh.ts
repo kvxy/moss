@@ -5,7 +5,8 @@ import { Object3D } from './object3d';
 export type MeshDescriptor = {
   label?: string,
   geometry: Geometry,
-  material: Material
+  material: Material,
+  static?: boolean
 };
 
 /** Renderable mesh. Holds geometry, material, and per-mesh data. */
@@ -19,7 +20,7 @@ export class Mesh extends Object3D {
   public display: Boolean = true;
 
   constructor(descriptor: MeshDescriptor) {
-    super(descriptor.label);
+    super({ label: descriptor.label, static: descriptor.static });
     this.geometry = descriptor.geometry;
     this.materials = [ descriptor.material ];
   }

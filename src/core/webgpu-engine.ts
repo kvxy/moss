@@ -1,4 +1,4 @@
-import { MeshRasterizer } from '../pipelines/mesh-rasterizer';
+import { MeshRasterizer } from '../pipelines/mesh-rasterizer/mesh-rasterizer';
 import { ID } from '../utils/id';
 import { RenderTarget } from './render-target';
 import { Scene } from './scene';

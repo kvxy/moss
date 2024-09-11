@@ -1,7 +1,9 @@
-import { RenderTarget } from '../core/render-target';
-import { Scene } from '../core/scene';
+import { RenderTarget } from '../../core/render-target';
+import { Scene } from '../../core/scene';
+import { Vector3 } from '../../moss';
+import { Mesh } from '../../objects/mesh';
 
-import MESH_SHADER from './shader.wgsl?raw'
+import MESH_SHADER from './mesh-shader.wgsl?raw'
 
 export type MeshRasterizerPassData = {
   scene: Scene,
@@ -53,8 +55,12 @@ export class MeshRasterizer {
     });
 
     const pipelineLayout = device.createPipelineLayout({
-      label: 'Rasterizer Pipelsine Layout',
-      bindGroupLayouts: []
+      label: 'Rasterizer Pipeline Layout',
+      bindGroupLayouts: [
+        Mesh.createAndCacheData(this.device).bindGroupLayout
+        // MATERIAL LAYOUT
+        // SCENE LAYOUT
+      ]
     });
 
     this.pipeline = device.createRenderPipeline({
@@ -106,7 +112,10 @@ export class MeshRasterizer {
     
     for (let mesh of data.scene.meshes) {
       mesh.gpuInitialize(this.device);
-      renderPass.setVertexBuffer(0, mesh.geometry.requireBuffer('default').gpuBuffer as GPUBuffer);
+      renderPass.setBindGroup(0, mesh.bindGroup as GPUBindGroup);
+      for (let [ _key, vertexBuffer ] of mesh.geometry.vertexBuffers) {
+        renderPass.setVertexBuffer(vertexBuffer.slot, vertexBuffer.gpuBuffer as GPUBuffer);
+      }
       renderPass.draw(3);
     }
 

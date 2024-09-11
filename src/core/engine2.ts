@@ -1,5 +1,5 @@
 import { MeshRasterizer } from '../pipelines/mesh-rasterizer/mesh-rasterizer';
-import { ComputePipeline, Pipeline, RenderPipeline } from '../pipelines/pipeline';
+import { ComputePipeline, Pipeline, RenderPipeline } from '../pipelines/mesh-rasterizer/pipeline';
 import { RenderTarget } from './render-target';
 import { Scene } from './scene';
 import { ID } from '../utils/id';

@@ -4,7 +4,6 @@
 export class Vector /*extends EventEmitter*/ {
   [index: number]: number;
 
-  private prev: number[];
   private dimension: number;
 
   constructor(vector: Vector);
@@ -26,7 +25,6 @@ export class Vector /*extends EventEmitter*/ {
       for (let i = 0; i < data.length; i++)
         this[i] = data[i];
     }
-    this.prev = new Array(this.dimension).fill(0);
   }
 
   /*public static projection(u: Vector, v: Vector) {
@@ -41,6 +39,14 @@ export class Vector /*extends EventEmitter*/ {
       out += u[i] * v[i];
     return out;
   }*/
+
+  public equals(other: this) {
+    if (this.dimension !== other.dimension) return false;
+    for (let i = 0; i < this.dimension; i++) {
+      if (this[i] !== other[i]) return false;
+    }
+    return true;
+  }
 
   public copy(other: this) {
     this.dimension = other.dimension;
@@ -57,6 +63,14 @@ export class Vector /*extends EventEmitter*/ {
     const vector: this = modify ? this : this.clone();
     for (let i = 0; i < vector.dimension; i++)
       vector[i] += other[i];
+    return vector;
+  }
+
+  public subtract(other: this, modify: boolean = true): this {
+    if (this.dimension !== other.dimension) throw new Error('Vector dimensions mismatch.');
+    const vector: this = modify ? this : this.clone();
+    for (let i = 0; i < vector.dimension; i++)
+      vector[i] -= other[i];
     return vector;
   }
 
