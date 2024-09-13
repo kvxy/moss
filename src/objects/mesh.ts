@@ -5,7 +5,7 @@ import { Object3D } from './object3d';
 export type MeshDescriptor = {
   label?: string,
   geometry: Geometry,
-  material: Material,
+  material?: Material,
   static?: boolean
 };
 
@@ -14,7 +14,7 @@ export class Mesh extends Object3D {
   public readonly isMesh = true;
 
   public geometry: Geometry;
-  public materials: Material[];
+  public materials: Material[] = [];
 
   /** If true (default), mesh will be rendered. */
   public display: Boolean = true;
@@ -22,7 +22,7 @@ export class Mesh extends Object3D {
   constructor(descriptor: MeshDescriptor) {
     super({ label: descriptor.label, static: descriptor.static });
     this.geometry = descriptor.geometry;
-    this.materials = [ descriptor.material ];
+    if (descriptor.material) this.materials.push(descriptor.material);
   }
 
   /** 

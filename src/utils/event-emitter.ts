@@ -29,7 +29,7 @@ export class EventEmitter {
    * @param type Type of event.
    * @param args Arguments supplied to listeners of the event.
    */
-  public triggerEvent(type: string, ...args: any[]) {
+  protected triggerEvent(type: string, ...args: any[]) {
     const listeners = this.eventMap.get(type);
     if (!listeners) return;
     for (let listener of listeners) {

@@ -57,7 +57,7 @@ export class MeshRasterizer {
     const pipelineLayout = device.createPipelineLayout({
       label: 'Rasterizer Pipeline Layout',
       bindGroupLayouts: [
-        Mesh.createAndCacheData(this.device).bindGroupLayout
+        Mesh.createAndCacheLayout(this.device)
         // MATERIAL LAYOUT
         // SCENE LAYOUT
       ]

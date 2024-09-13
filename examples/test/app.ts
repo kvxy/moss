@@ -15,12 +15,8 @@ const geometry = new MOSS.Geometry()
     0, 255, 0, 255,
     0, 0, 255, 255
   ]);
-const material = new MOSS.Material({
-  color: new MOSS.Color(255, 255, 0)
-});
 const mesh = new MOSS.Mesh({
-  geometry: geometry, 
-  material: material
+  geometry: geometry
 });
 scene.addObject(mesh);
 
