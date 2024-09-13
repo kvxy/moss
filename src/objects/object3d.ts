@@ -54,11 +54,13 @@ export class Object3D {
   public readonly position: Vector3 = new Vector3(0, 0, 0);
   public readonly rotation: Vector3 = new Vector3(0, 0, 0);
   public readonly scale: Vector3 = new Vector3(1, 1, 1);
+  public worldMatrix: Matrix4x4;
+  private needMatrixUpdate: boolean = false;
 
   public device?: GPUDevice;
   public bindGroup?: GPUBindGroup;
-  public worldMatrix: Matrix4x4;
   public buffer: BufferView;
+  private needBufferUpdate: boolean = false;
   
   constructor(descriptor: Object3DDescriptor = {}) {
     this.label = descriptor.label ?? this.id.toString();
@@ -67,8 +69,18 @@ export class Object3D {
       size: Matrix4x4.BYTE_SIZE,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
-    this.worldMatrix = new Matrix4x4(this.buffer.arrayBuffer, 0);
+
     this.static = descriptor.static ?? false;
+
+    this.worldMatrix = new Matrix4x4(this.buffer.arrayBuffer, 0);
+    this.worldMatrix.makeIdentity();
+
+    if (!this.static) {
+      this.position.addEventListener('onUpdate', this.flagMatrixUpdate);
+      this.rotation.addEventListener('onUpdate', this.flagMatrixUpdate);
+      this.scale.addEventListener('onUpdate', this.flagMatrixUpdate);
+      this.worldMatrix.addEventListener('onUpdate', this.flagBufferUpdate);
+    }
   }
 
   /** 
@@ -102,11 +114,33 @@ export class Object3D {
     });
   }
 
+  /** Updates object3d world matrix. This is done automatically on tick. */
+  public updateMatrix() {
+    this.worldMatrix.makeIdentity();
+    this.worldMatrix.translate(this.position);
+    this.worldMatrix.rotate(this.rotation);
+    this.worldMatrix.scale(this.scale);
+  }
+  
+  /** Flags gpu buffer for update. */
+  protected flagBufferUpdate() {
+    this.needBufferUpdate = true;
+  }
+
+  /** Flags world matrix for update. */
+  protected flagMatrixUpdate() {
+    this.needMatrixUpdate = true;
+  }
+
   /** Called per render tick. */
   public tick() {
     if (!this.static) {
-      // check if matrix is changed (onUpdate flag)
-      // if it is, update gpubuffer
+      if (this.needMatrixUpdate) {
+        this.updateMatrix();
+      }
+      if (this.needBufferUpdate && this.buffer.gpuInitialized) {
+        this.buffer.updateGPUBuffer();
+      }
     }
   }
 

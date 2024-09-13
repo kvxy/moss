@@ -1,7 +1,7 @@
-// import { EventEmitter } from '../event-emitter';
+import { EventEmitter } from '../event-emitter';
 
 /** General vector class. **/
-export class Vector /*extends EventEmitter*/ {
+export class Vector extends EventEmitter {
   [index: number]: number;
 
   private dimension: number;
@@ -10,6 +10,7 @@ export class Vector /*extends EventEmitter*/ {
   constructor(dimension?: number);
   constructor(array: ArrayLike<number>);
   constructor(data: Vector | number | ArrayLike<number> | undefined) {
+    super();
     if (data === undefined) {
       this.dimension = 0;
     } else if (typeof data === 'number') {
@@ -50,8 +51,10 @@ export class Vector /*extends EventEmitter*/ {
 
   public copy(other: this) {
     this.dimension = other.dimension;
-    for (let i = 0; i < other.dimension; i++)
+    for (let i = 0; i < other.dimension; i++) {
       this[i] = other[i];
+    }
+    this.onUpdate();
   }
 
   public clone(): this {
@@ -61,16 +64,20 @@ export class Vector /*extends EventEmitter*/ {
   public add(other: this, modify: boolean = true): this {
     if (this.dimension !== other.dimension) throw new Error('Vector dimensions mismatch.');
     const vector: this = modify ? this : this.clone();
-    for (let i = 0; i < vector.dimension; i++)
+    for (let i = 0; i < vector.dimension; i++) {
       vector[i] += other[i];
+    }
+    this.onUpdate();
     return vector;
   }
 
   public subtract(other: this, modify: boolean = true): this {
     if (this.dimension !== other.dimension) throw new Error('Vector dimensions mismatch.');
     const vector: this = modify ? this : this.clone();
-    for (let i = 0; i < vector.dimension; i++)
+    for (let i = 0; i < vector.dimension; i++) {
       vector[i] -= other[i];
+    }
+    this.onUpdate();
     return vector;
   }
 
@@ -79,6 +86,7 @@ export class Vector /*extends EventEmitter*/ {
     for (let i = 0; i < upper; i++) {
       this[i] = numbers[i];
     }
+    this.onUpdate();
     return this;
   }
 
@@ -94,33 +102,34 @@ export class Vector /*extends EventEmitter*/ {
       for (let i = 0; i < vector.dimension; i++)
         vector[i] *= scalar[i];
     }
+    this.onUpdate();
     return vector;
   }
 
-  /*protected onUpdate() {
-    this.triggerEvent('onUpdate', this.prev);
-    for (let i = 0; i < this.dimension; i++) {
-      this.prev[i] = this[i];
-    }
+  protected onUpdate() {
+    this.triggerEvent('onUpdate');
   }
 
-  public addEventListener(type: 'onUpdate', listener: (previous: number[]) => void): void;
+  public addEventListener(type: 'onUpdate', listener: () => void): void;
   public addEventListener(type: string, listener: Function) {
     super.addEventListener(type, listener);
-  }*/
+  }
 
   public fromJSON(json: any): this {
     const data = json as number[];
     this.dimension = data.length;
-    for (let i = 0; i < data.length; i++)
+    for (let i = 0; i < data.length; i++) {
       this[i] = data[i];
+    }
+    this.onUpdate();
     return this;
   }
 
   public toJSON(): number[] {
     let data: number[] = [];
-    for (let i = 0; i < this.dimension; i++)
+    for (let i = 0; i < this.dimension; i++) {
       data.push(this[i]);
+    }
     return data;
   }
 }
@@ -149,10 +158,12 @@ export class Vector2 extends Vector {
 
   public set x(num: number) {
     this[0] = num;
+    this.onUpdate();
   }
 
   public set y(num: number) {
     this[1] = num;
+    this.onUpdate();
   }
 }
 
@@ -186,14 +197,17 @@ export class Vector3 extends Vector {
 
   public set x(num: number) {
     this[0] = num;
+    this.onUpdate();
   }
 
   public set y(num: number) {
     this[1] = num;
+    this.onUpdate();
   }
 
   public set z(num: number) {
     this[2] = num;
+    this.onUpdate();
   }
 
   public set(x: number, y: number, z: number): this {

@@ -6,9 +6,9 @@ const scene = new MOSS.Scene();
 
 const geometry = new MOSS.Geometry()
   .setAttribute('position', [
-    -1, -1, 0,
-    1, -1,  0,
-    1,  1,  0,
+    -0.5, -0.5, 0.0,
+     0.5, -0.5, 0.0,
+     0.0,  0.5, 0.0,
   ])
   .setAttribute('color', [
     255, 0, 0, 255,

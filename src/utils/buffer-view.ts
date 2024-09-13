@@ -46,6 +46,10 @@ export class BufferView {
     }
   }
 
+  public get gpuInitialized(): boolean {
+    return this.device !== undefined;
+  }
+
   public get arrayBuffer(): ArrayBufferLike {
     return this._arrayBuffer;
   }

@@ -193,4 +193,16 @@ export class Matrix4x4 extends EventEmitter {
     d[7 + o] = -s * a3 + c * d7;
     this.triggerEvent('onUpdate');
   }
+
+  public rotate(vector: Vector3) {
+    if (vector.x !== 0) {
+      this.rotateX(vector.x);
+    }
+    if (vector.y !== 0) {
+      this.rotateY(vector.y);
+    }
+    if (vector.z !== 0) {
+      this.rotateZ(vector.z);
+    }
+  }
 }
