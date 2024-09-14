@@ -12,8 +12,8 @@ export class Camera extends Object3D {
     this.buffer.resize(Camera.BYTE_SIZE);
     this.worldMatrix = new Matrix4x4(this.buffer.arrayBuffer, 0);
     this.projectionMatrix = new Matrix4x4(this.buffer.arrayBuffer, Matrix4x4.BYTE_SIZE);
-    this.worldMatrix.addEventListener('onUpdate', this.flagBufferUpdate);
-    this.projectionMatrix.addEventListener('onUpdate', this.flagBufferUpdate);
+    this.worldMatrix.addEventListener('onUpdate', this.onMatrixUpdate);
+    this.projectionMatrix.addEventListener('onUpdate', this.onMatrixUpdate);
   }
 
   public tick() {

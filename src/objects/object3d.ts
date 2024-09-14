@@ -76,10 +76,10 @@ export class Object3D {
     this.worldMatrix.makeIdentity();
 
     if (!this.static) {
-      this.position.addEventListener('onUpdate', this.flagMatrixUpdate);
-      this.rotation.addEventListener('onUpdate', this.flagMatrixUpdate);
-      this.scale.addEventListener('onUpdate', this.flagMatrixUpdate);
-      this.worldMatrix.addEventListener('onUpdate', this.flagBufferUpdate);
+      this.position.addEventListener('onUpdate', this.onTransformUpdate);
+      this.rotation.addEventListener('onUpdate', this.onTransformUpdate);
+      this.scale.addEventListener('onUpdate', this.onTransformUpdate);
+      this.worldMatrix.addEventListener('onUpdate', this.onMatrixUpdate);
     }
   }
 
@@ -123,12 +123,12 @@ export class Object3D {
   }
   
   /** Flags gpu buffer for update. */
-  protected flagBufferUpdate() {
+  protected onMatrixUpdate() {
     this.needBufferUpdate = true;
   }
 
   /** Flags world matrix for update. */
-  protected flagMatrixUpdate() {
+  protected onTransformUpdate() {
     this.needMatrixUpdate = true;
   }
 
