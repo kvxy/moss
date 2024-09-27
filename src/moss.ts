@@ -1,4 +1,4 @@
-import { Geometry } from './geometry/goemetry';
+import { Geometry } from './geometry/goemetry2';
 import { Material } from './material/material';
 import { Mesh } from './objects/mesh';
 import { Scene } from './core/scene';
