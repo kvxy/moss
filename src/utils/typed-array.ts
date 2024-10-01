@@ -24,15 +24,15 @@ const typedArrayConstructors = [
 export type TypedArrayConstructor = typeof typedArrayConstructors[number];
 
 const typedArrayFormats = [
-  'float64' as 'float64',
-  'float32' as 'float32',
-  'sint32' as 'sint32',
-  'sint16' as 'sint16',
-  'sint8' as 'sint8',
-  'uint32' as 'uint32',
-  'uint16' as 'uint16',
-  'uint8' as 'uint8',
-  'uint8c' as 'uint8c'
+  'float64',
+  'float32',
+  'sint32',
+  'sint16',
+  'sint8',
+  'uint32',
+  'uint16',
+  'uint8',
+  'uint8c'
 ] as const;
 
 export type TypedArrayFormat = typeof typedArrayFormats[number];
