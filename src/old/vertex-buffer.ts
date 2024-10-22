@@ -1,4 +1,4 @@
-import { BufferView } from '../utils/buffer-view';
+import { BufferView } from './buffer-view';
 import { TypedArrayFormat } from '../utils/typed-array';
 
 type GeometryVertexAttribute = {

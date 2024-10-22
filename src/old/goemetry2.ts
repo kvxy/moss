@@ -1,4 +1,4 @@
-import { BufferView } from '../utils/buffer-view';
+import { BufferView } from './buffer-view';
 import { SetAttributeOptions, VertexBuffer } from './vertex-buffer';
 
 export type GeometryVertexBufferOptions = {

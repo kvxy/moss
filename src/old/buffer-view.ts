@@ -1,4 +1,4 @@
-import { TypedArray, TypedArrayFormat, TypedArrayMapping } from './typed-array';
+import { TypedArray, TypedArrayFormat, TypedArrayMapping } from '../utils/typed-array';
 
 export type BufferViewDescriptor = {
   label?: string,

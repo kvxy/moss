@@ -1,7 +1,6 @@
-import { EventEmitter } from '../event-emitter';
 import { Vector3 } from './vector';
 
-export class Matrix4x4 extends EventEmitter {
+export class Matrix4x4 {
   public static readonly BYTE_SIZE = 16 * 4;
 
   public data: Float32Array;
@@ -12,7 +11,6 @@ export class Matrix4x4 extends EventEmitter {
    * @param offset The matrix's data offset, in elements of a float32 array, into given buffer / array.
    */
   constructor(data?: ArrayLike<number> | ArrayBufferLike, offset: number = 0) {
-    super();
     if (data) {
       if ('length' in data && data.length < 16) throw new Error('Supplied array is not at least length 16!');
       if ('byteLength' in data && data.byteLength < Matrix4x4.BYTE_SIZE) throw new Error(`Supplied buffer does not have at least ${Matrix4x4.BYTE_SIZE} bytes!`);
@@ -24,11 +22,6 @@ export class Matrix4x4 extends EventEmitter {
     this.offset = offset;
   }
 
-  public addEventListener(type: 'onUpdate', listener: () => void): void;
-  public addEventListener(type: string, listener: Function): void {
-    super.addEventListener(type, listener);
-  }
-
   /** Turns matrix into an identity matrix. */
   public makeIdentity() {
     this.data.set([
@@ -37,7 +30,6 @@ export class Matrix4x4 extends EventEmitter {
       0, 0, 1, 0,
       0, 0, 0, 1
     ], this.offset);
-    this.triggerEvent('onUpdate');
   }
 
   /**
@@ -59,7 +51,6 @@ export class Matrix4x4 extends EventEmitter {
       0,  0,  a, -1,
       0,  0,  b,  0
     ], this.offset);
-    this.triggerEvent('onUpdate');
   }
 
   /* public makeOrthogonal() {
@@ -90,7 +81,6 @@ export class Matrix4x4 extends EventEmitter {
     d[13 + o] += x * d[1 + o] + y * d[5 + o] + z * d[9 + o];
     d[14 + o] += x * d[2 + o] + y * d[6 + o] + z * d[10 + o];
     d[15 + o] += x * d[3 + o] + y * d[7 + o] + z * d[11 + o];
-    this.triggerEvent('onUpdate');
   }
 
   /**
@@ -125,7 +115,6 @@ export class Matrix4x4 extends EventEmitter {
     d[9 + o] *= z;
     d[10 + o] *= z;
     d[11 + o] *= z;
-    this.triggerEvent('onUpdate');
   }
 
   /**
@@ -147,7 +136,6 @@ export class Matrix4x4 extends EventEmitter {
     d[9 + o]  = -s * d5 + c * d9;
     d[10 + o] = -s * d6 + c * d10;
     d[11 + o] = -s * d7 + c * d11;
-    this.triggerEvent('onUpdate');
   }
 
   /**
@@ -169,7 +157,6 @@ export class Matrix4x4 extends EventEmitter {
     d[9 + o]  = -s * d1 + c * d9;
     d[10 + o] = -s * d2 + c * d10;
     d[11 + o] = -s * d3 + c * d11;
-    this.triggerEvent('onUpdate');
   }
 
   /**
@@ -191,7 +178,6 @@ export class Matrix4x4 extends EventEmitter {
     d[5 + o] = -s * a1 + c * d5;
     d[6 + o] = -s * a2 + c * d6;
     d[7 + o] = -s * a3 + c * d7;
-    this.triggerEvent('onUpdate');
   }
 
   public rotate(vector: Vector3) {

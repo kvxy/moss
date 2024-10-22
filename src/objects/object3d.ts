@@ -1,4 +1,4 @@
-import { BufferView } from '../utils/buffer-view';
+import { BufferView } from '../old/buffer-view';
 import { ID } from '../utils/id';
 import { Matrix4x4 } from '../utils/math/matrix4x4';
 import { Vector, Vector3 } from '../utils/math/vector';

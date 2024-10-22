@@ -23,7 +23,7 @@ const typedArrayConstructors = [
 
 export type TypedArrayConstructor = typeof typedArrayConstructors[number];
 
-const typedArrayFormats = [
+const typedArrayNames = [
   'float64',
   'float32',
   'sint32',
@@ -35,21 +35,23 @@ const typedArrayFormats = [
   'uint8c'
 ] as const;
 
-export type TypedArrayFormat = typeof typedArrayFormats[number];
+export type TypedArrayName = typeof typedArrayNames[number];
 
-const constructorFormatMap = new Map<TypedArrayConstructor, TypedArrayFormat>(typedArrayConstructors.map((constructor, i) => [ constructor, typedArrayFormats[i] ]));
-const formatConstructorMap = new Map<TypedArrayFormat, TypedArrayConstructor>(typedArrayConstructors.map((constructor, i) => [ typedArrayFormats[i], constructor ]));
+const constructorNameMap = new Map<TypedArrayConstructor, TypedArrayName>(typedArrayConstructors.map((constructor, i) => [ constructor, typedArrayNames[i] ]));
+const nameConstructorMap = new Map<TypedArrayName, TypedArrayConstructor>(typedArrayConstructors.map((constructor, i) => [ typedArrayNames[i], constructor ]));
 
-/** Conversion between typed array formats and their respective constructors. */
-export const TypedArrayMapping = {
-  getFormat: function(constructor: TypedArrayConstructor): TypedArrayFormat {
-    const str = constructorFormatMap.get(constructor);
+/** Conversion between typed array names and their respective constructors. */
+export class TypedArrayMapping {
+  /** Gets name of typed array constructor. */
+  public static getName(constructor: TypedArrayConstructor): TypedArrayName {
+    const str = constructorNameMap.get(constructor);
     if (!str) throw new Error(`TypedArray missing conversion for constructor ${constructor.name}`);
     return str;
-  },
-  getConstructor: function(format: TypedArrayFormat): TypedArrayConstructor {
-    const constructor = formatConstructorMap.get(format);
-    if (!constructor) throw new Error(`TypedArray missing conversion for format ${format}.`);
+  }
+  /** Gets constructor of typed array name. */
+  public static getConstructor(name: TypedArrayName): TypedArrayConstructor {
+    const constructor = nameConstructorMap.get(name);
+    if (!constructor) throw new Error(`TypedArray missing conversion for name ${name}.`);
     return constructor;
   }
 };
